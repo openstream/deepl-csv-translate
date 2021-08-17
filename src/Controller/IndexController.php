@@ -16,11 +16,22 @@ class IndexController extends AbstractController
 {
 
     /**
+     * @var string
+     */
+    private $deeplKey;
+
+    public function __construct(string $deeplKey)
+    {
+
+        $this->deeplKey = $deeplKey;
+    }
+
+    /**
      * @Route("/", name="index")
      */
     public function index(): Response
     {
-        $deepl = DeepClient::create('e8273a42-1765-d437-1143-77ea4c6eeb4c');
+        $deepl = DeepClient::create($this->deeplKey);
 
         $fileDir = $this->getParameter('kernel.project_dir').'/files/';
         $csv = Reader::createFromPath($fileDir.'input.csv', 'r');
@@ -31,7 +42,8 @@ class IndexController extends AbstractController
         $records = Statement::create()->process($csv);
 
         //NEW csv file:
-        $writer = Writer::createFromPath($fileDir.'translated'.date('Y-m-d-H-i-s').'.csv', 'w+');
+        $fileName = 'translated'.date('Y-m-d-H-i-s').'.csv';
+        $writer = Writer::createFromPath($fileDir.$fileName, 'w+');
         $writer->setDelimiter(';');
         $writer->setEnclosure('"');
         $writer->insertOne($header);
@@ -69,14 +81,16 @@ class IndexController extends AbstractController
             }
 
             $writer->insertOne($newRecord);
-            if($i >= 10){
+            if($i >= 1){
                 break;
             }
         }
 
         return $this->render('index/index.html.twig', [
             'header' => $header,
-            'records' => $records
+            'records' => $records,
+            'count' => $i,
+            'filename' => $fileName
         ]);
 
     }

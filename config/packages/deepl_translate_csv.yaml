@@ -1,0 +1,2 @@
+parameters:
+    deeplKey: '%env(DEEPL_KEY)%'
