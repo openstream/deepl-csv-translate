@@ -19,11 +19,16 @@ class IndexController extends AbstractController
      * @var string
      */
     private $deeplKey;
+    /**
+     * @var array
+     */
+    private $translate;
 
-    public function __construct(string $deeplKey)
+    public function __construct(string $deeplKey, array $translate)
     {
 
         $this->deeplKey = $deeplKey;
+        $this->translate = $translate;
     }
 
     /**
@@ -54,30 +59,16 @@ class IndexController extends AbstractController
         foreach ($records as $record){
             $i++;
             $newRecord = [];
-            $newRecord['Artikel_ID'] = $record['Artikel_ID'];
-            $newRecord['Intern_ID'] = $record['Intern_ID'];
-            if(trim($record['Bezeichnung']) != ''){
-                $newRecord['Bezeichnung'] = $this->translate($deepl, $record['Bezeichnung']);
-            } else {
-                $newRecord['Bezeichnung'] = '';
-            }
-
-            if(trim($record['Beschreibung']) != ''){
-                $newRecord['Beschreibung'] = $this->translate($deepl, $record['Beschreibung']);
-            } else {
-                $newRecord['Beschreibung'] = '';
-            }
-
-            if(trim($record['Beschreibung2']) != ''){
-                $newRecord['Beschreibung2'] = $this->translate($deepl, $record['Beschreibung2']);
-            } else {
-                $newRecord['Beschreibung2'] = '';
-            }
-
-            if(trim($record['Anmerkung']) != ''){
-                $newRecord['Anmerkung'] = $this->translate($deepl, $record['Anmerkung']);
-            } else {
-                $newRecord['Anmerkung'] = '';
+            foreach ($header as $column){
+                if(in_array($column, $this->translate)){
+                    if(trim($record[$column]) != ''){
+                        $newRecord[$column] = $this->translate($deepl, $record[$column]);
+                    } else {
+                        $newRecord[$column] = '';
+                    }
+                }else{
+                    $newRecord[$column] = $record[$column];
+                }
             }
 
             $writer->insertOne($newRecord);

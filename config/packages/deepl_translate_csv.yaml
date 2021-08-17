@@ -1,2 +1,8 @@
 parameters:
     deeplKey: '%env(DEEPL_KEY)%'
+
+    translate:
+        - Bezeichnung
+        - Beschreibung
+        - Beschreibung2
+        - Anmerkung

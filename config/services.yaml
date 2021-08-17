@@ -26,3 +26,4 @@ services:
     App\Controller\IndexController:
         arguments:
             - '%deeplKey%'
+            - '%translate%'
